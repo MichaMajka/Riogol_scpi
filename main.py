@@ -36,6 +36,10 @@ max_value_str = osciloscope.query(':MEASure:ITEM? VMAX,CHANnel1')
 max_value_float = float(max_value_str.strip())
 print(max_value_float)
 
+#spotkanie techniczne 02012024
+v_max = 0.9 * max_value_float
+v_min = 0.1 * max_value_float
+
 # Capture the waveform data
 osciloscope.write(":WAVEFORM:FORMAT ASCII")
 osciloscope.write(":WAVEFORM:SOURCE CHANNEL1")
@@ -55,17 +59,28 @@ time_step = total_time / len(waveform_data)
 times = np.arange(0, total_time, time_step)
 
 # Find the indices where voltage crosses 5V and 10V
-index_0v = np.where(waveform_data >= 0)[0][0]
+index_0v = np.where(waveform_data >= 1)[0][0]
 index_5v = np.where(waveform_data >= 5)[0][0]
 index_10v = np.where(waveform_data >= 10)[0][0]
+
+#spotkanie techniczne 02012024
+index_min_value = np.where(waveform_data >= v_min)[0][0]
+index_max_value = np.where(waveform_data >= v_max)[0][0]
 
 # Calculate the time difference
 time_0v = times[index_0v]
 time_5v = times[index_5v]
 time_10v = times[index_10v]
 time_difference = time_10v - time_5v
-
 print(f"Time from 5V to 10V: {time_difference} seconds")
+
+#spotkanie techniczne 02012024
+index_min_value_time = times[index_min_value]
+index_max_value_time = times[index_max_value]
+time_difference = index_max_value_time - index_min_value_time
+
+#spotkanie techniczne 02012024
+print(f"Rise time: {time_difference} seconds")
 
 # Plot the waveform
 plt.figure(figsize=(10, 6))
